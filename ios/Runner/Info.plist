@@ -33,7 +33,7 @@
             <string>com.dramabest.story</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>REVERSED_CLIENT_ID_FROM_GOOGLESERVICE_INFO</string> <!-- set at build time from GoogleService-Info.plist -->
+				<string>com.googleusercontent.apps.661359230162-2hb9v7igcqtfbpakt9culp91fd067s8b</string> <!-- REVERSED_CLIENT_ID from GoogleService-Info.plist -->
 			</array>
 		</dict>
 

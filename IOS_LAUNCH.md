@@ -11,33 +11,26 @@ Bundle ID: `com.dramabest.story` · App name: **Dramabest** · Version: same as 
 - `codemagic.yaml` builds, signs and uploads to TestFlight with the next free build number.
 - `.gitignore` keeps the Android signing key and build files out of git.
 
-## Your steps (one time)
+## Your steps (one time) — status 11 Nov 2026
 
-### 1. Apple Developer (developer.apple.com → Certificates, IDs & Profiles)
-1. **Identifiers → com.dramabest.story** (created with the app record): tick **Push Notifications**, **Sign in with Apple** and **Associated Domains**. Save.
-2. **Keys → +**: name "Dramabest push", tick **Apple Push Notifications service (APNs)**, download the `.p8` file (only downloadable once). Note the **Key ID**.
-3. Team ID: **G9RMQSFTQQ** (already set in the project).
+### 1. Apple Developer (developer.apple.com → Certificates, IDs & Profiles) 
+1. **Identifiers → com.dramabest.story**: make sure **Push Notifications**, **Sign in with Apple** and **Associated Domains** are all ticked. Save. *(Associated Domains must be on, or signing fails.)*
+2. Push key: **done** (Dramabest Notification, Key ID FJF237872L, uploaded to Firebase).
+3. Team ID: **G9RMQSFTQQ** (in the project).
 
-### 2. App Store Connect API key (for Codemagic)
-Users and Access → Integrations → App Store Connect API → **+**, name "Codemagic", access **App Manager**.
-Download the `.p8` (once only), note the **Issuer ID** and **Key ID**. Type these into Codemagic only, never into chat.
+### 2. App Store Connect API key for Codemagic: **done** (Codemagic key "dramabest").
 
-### 3. Firebase (project dramabest-25b22)
-1. Project settings → **Add app → iOS**, bundle ID `com.dramabest.story`, nickname Dramabest iOS.
-2. Download **GoogleService-Info.plist**. (It is not a secret; you can send it to Claude to check.)
-3. Project settings → Cloud Messaging → **Apple app configuration → APNs authentication key**: upload the push `.p8` from step 1.2 with its Key ID and your Team ID.
-4. Authentication → Sign-in method → **Apple**: switch on.
+### 3. Firebase (dramabest-25b22): iOS app **done**, GoogleService-Info.plist is in the project, APNs key **done**.
+Still check: Authentication → Sign-in method → **Apple** switched on.
 
-### 4. Code on GitHub
-Codemagic builds from a git repository. The app folder is not in git yet; Claude can put it in a **private** repository once you say so.
+### 4. Code on GitHub: **done** — private repo umohmoses/dramabest-ios.
 
-### 5. Codemagic (codemagic.io, sign in with GitHub)
-1. Add the app from the repository; choose **codemagic.yaml** workflow.
-2. Team settings → Integrations → **Developer Portal → Connect**: name it exactly **Dramabest ASC**, paste the Issuer ID, Key ID and upload the API `.p8` from step 2.
-3. App → Environment variables, group **dramabest_ios**:
-   - `GOOGLE_SERVICE_INFO_PLIST`: the plist file base64-encoded (Claude can produce this text from the file), **Secure**.
-   - (`APP_STORE_APPLE_ID` 6809405695 and Team ID G9RMQSFTQQ are already in the project.)
-4. Start **Dramabest iOS → TestFlight**. About 20–30 minutes later the build appears in TestFlight.
+### 5. Codemagic (codemagic.io)
+1. **Applications → Add application** → GitHub → `dramabest-ios` → project type **Flutter App (via codemagic.yaml)**.
+2. **Team settings → Code signing identities**:
+   - **iOS certificates → Generate certificate** (type Apple Distribution, using key "dramabest"). If you already have a distribution certificate from the Dilon apps you can use *Fetch certificate* instead, but it needs its private key (.p12); generating a new one is simpler (Apple allows several).
+   - **iOS provisioning profiles → Fetch profiles** → pick the **App Store** profile for `com.dramabest.story`. If none is listed, create it at developer.apple.com → Profiles → + → **App Store Connect** → App ID com.dramabest.story → the distribution certificate, then fetch again.
+3. Open the app → **Start new build** → workflow **Dramabest iOS -> TestFlight**. About 20–30 minutes later the build appears in App Store Connect → TestFlight.
 
 ### 6. Server settings Claude changes (with your go-ahead)
 - iOS links (`applinks:admin.dramabest.com`) need the server's Apple site file to name `<TeamID>.com.dramabest.story` (it still has the template's ID).

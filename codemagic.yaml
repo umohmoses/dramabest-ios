@@ -1,25 +1,20 @@
 # Dramabest iOS build on Codemagic (builds on Codemagic's Mac, uploads to App Store Connect / TestFlight).
 #
-# One-time setup in Codemagic (see IOS_LAUNCH.md):
-#   1. Teams -> Integrations -> Developer Portal: add your App Store Connect API key, name it "Dramabest ASC".
-#   2. App -> Environment variables, group "dramabest_ios":
-#        GOOGLE_SERVICE_INFO_PLIST = base64 of the GoogleService-Info.plist downloaded from Firebase
-#        (Firebase project dramabest-25b22 -> iOS app com.dramabest.story). Mark it Secure.
-#      (The Apple ID 6809405695 and Team G9RMQSFTQQ are already set in this project.)
-#   3. Start the "Dramabest iOS -> TestFlight" workflow.
+# Already in this project: bundle com.dramabest.story, Team G9RMQSFTQQ, App Store Apple ID 6809405695,
+# Firebase iOS config (ios/Runner/GoogleService-Info.plist, project dramabest-25b22).
+# Codemagic needs only: Team settings -> Integrations -> Developer Portal key named "dramabest" (done),
+# then start the "Dramabest iOS -> TestFlight" workflow.
 workflows:
   ios-testflight:
     name: Dramabest iOS -> TestFlight
     instance_type: mac_mini_m2
     max_build_duration: 90
     integrations:
-      app_store_connect: Dramabest ASC
+      app_store_connect: dramabest
     environment:
       flutter: 3.32.6
       xcode: latest
       cocoapods: default
-      groups:
-        - dramabest_ios
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.dramabest.story
@@ -27,18 +22,16 @@ workflows:
         BUNDLE_ID: com.dramabest.story
         APP_STORE_APPLE_ID: 6809405695 # App Store Connect -> Dramabest -> App Information -> Apple ID
     scripts:
-      - name: Firebase config for iOS
+      - name: Check Firebase config for iOS
         script: |
           set -e
-          if [ -z "$GOOGLE_SERVICE_INFO_PLIST" ]; then echo "GOOGLE_SERVICE_INFO_PLIST is not set (see IOS_LAUNCH.md)"; exit 1; fi
-          echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist
           PLIST_BUNDLE=$(/usr/libexec/PlistBuddy -c "Print :BUNDLE_ID" ios/Runner/GoogleService-Info.plist)
           if [ "$PLIST_BUNDLE" != "$BUNDLE_ID" ]; then echo "GoogleService-Info.plist is for $PLIST_BUNDLE, expected $BUNDLE_ID"; exit 1; fi
           REVERSED=$(/usr/libexec/PlistBuddy -c "Print :REVERSED_CLIENT_ID" ios/Runner/GoogleService-Info.plist)
           /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 $REVERSED" ios/Runner/Info.plist
-          echo "Firebase iOS config installed"
+          echo "Firebase iOS config OK"
       - name: AdMob iOS App ID from the admin dashboard
-        script: sh ios/sync_admob_app_id.sh
+        script: sh ios/sync_admob_app_id.sh || echo "Keeping the AdMob App ID already in Info.plist"
       - name: Packages
         script: |
           flutter pub get
