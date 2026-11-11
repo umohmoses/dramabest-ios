@@ -12,7 +12,7 @@ workflows:
     integrations:
       app_store_connect: dramabest
     environment:
-      flutter: 3.32.6
+      flutter: 3.38.10 # iOS only: Firebase auth/messaging iOS code needs Flutter >= 3.38 (Android builds stay on 3.32.6)
       xcode: latest
       cocoapods: default
       ios_signing:
