@@ -16,7 +16,7 @@ Bundle ID: `com.dramabest.story` · App name: **Dramabest** · Version: same as 
 ### 1. Apple Developer (developer.apple.com → Certificates, IDs & Profiles)
 1. **Identifiers → com.dramabest.story** (created with the app record): tick **Push Notifications**, **Sign in with Apple** and **Associated Domains**. Save.
 2. **Keys → +**: name "Dramabest push", tick **Apple Push Notifications service (APNs)**, download the `.p8` file (only downloadable once). Note the **Key ID**.
-3. Note your **Team ID** (top right of the Membership page). Send it to Claude for step 6.
+3. Team ID: **G9RMQSFTQQ** (already set in the project).
 
 ### 2. App Store Connect API key (for Codemagic)
 Users and Access → Integrations → App Store Connect API → **+**, name "Codemagic", access **App Manager**.
@@ -36,7 +36,7 @@ Codemagic builds from a git repository. The app folder is not in git yet; Claude
 2. Team settings → Integrations → **Developer Portal → Connect**: name it exactly **Dramabest ASC**, paste the Issuer ID, Key ID and upload the API `.p8` from step 2.
 3. App → Environment variables, group **dramabest_ios**:
    - `GOOGLE_SERVICE_INFO_PLIST`: the plist file base64-encoded (Claude can produce this text from the file), **Secure**.
-   - `APP_STORE_APPLE_ID`: the app's Apple ID number (App Store Connect → App Information).
+   - (`APP_STORE_APPLE_ID` 6809405695 and Team ID G9RMQSFTQQ are already in the project.)
 4. Start **Dramabest iOS → TestFlight**. About 20–30 minutes later the build appears in TestFlight.
 
 ### 6. Server settings Claude changes (with your go-ahead)

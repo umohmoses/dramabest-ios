@@ -5,7 +5,7 @@
 #   2. App -> Environment variables, group "dramabest_ios":
 #        GOOGLE_SERVICE_INFO_PLIST = base64 of the GoogleService-Info.plist downloaded from Firebase
 #        (Firebase project dramabest-25b22 -> iOS app com.dramabest.story). Mark it Secure.
-#        APP_STORE_APPLE_ID = the app's Apple ID number (App Store Connect -> App Information -> Apple ID)
+#      (The Apple ID 6809405695 and Team G9RMQSFTQQ are already set in this project.)
 #   3. Start the "Dramabest iOS -> TestFlight" workflow.
 workflows:
   ios-testflight:
@@ -25,6 +25,7 @@ workflows:
         bundle_identifier: com.dramabest.story
       vars:
         BUNDLE_ID: com.dramabest.story
+        APP_STORE_APPLE_ID: 6809405695 # App Store Connect -> Dramabest -> App Information -> Apple ID
     scripts:
       - name: Firebase config for iOS
         script: |
