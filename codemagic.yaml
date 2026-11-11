@@ -1,0 +1,61 @@
+# Dramabest iOS build on Codemagic (builds on Codemagic's Mac, uploads to App Store Connect / TestFlight).
+#
+# One-time setup in Codemagic (see IOS_LAUNCH.md):
+#   1. Teams -> Integrations -> Developer Portal: add your App Store Connect API key, name it "Dramabest ASC".
+#   2. App -> Environment variables, group "dramabest_ios":
+#        GOOGLE_SERVICE_INFO_PLIST = base64 of the GoogleService-Info.plist downloaded from Firebase
+#        (Firebase project dramabest-25b22 -> iOS app com.dramabest.story). Mark it Secure.
+#        APP_STORE_APPLE_ID = the app's Apple ID number (App Store Connect -> App Information -> Apple ID)
+#   3. Start the "Dramabest iOS -> TestFlight" workflow.
+workflows:
+  ios-testflight:
+    name: Dramabest iOS -> TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 90
+    integrations:
+      app_store_connect: Dramabest ASC
+    environment:
+      flutter: 3.32.6
+      xcode: latest
+      cocoapods: default
+      groups:
+        - dramabest_ios
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.dramabest.story
+      vars:
+        BUNDLE_ID: com.dramabest.story
+    scripts:
+      - name: Firebase config for iOS
+        script: |
+          set -e
+          if [ -z "$GOOGLE_SERVICE_INFO_PLIST" ]; then echo "GOOGLE_SERVICE_INFO_PLIST is not set (see IOS_LAUNCH.md)"; exit 1; fi
+          echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist
+          PLIST_BUNDLE=$(/usr/libexec/PlistBuddy -c "Print :BUNDLE_ID" ios/Runner/GoogleService-Info.plist)
+          if [ "$PLIST_BUNDLE" != "$BUNDLE_ID" ]; then echo "GoogleService-Info.plist is for $PLIST_BUNDLE, expected $BUNDLE_ID"; exit 1; fi
+          REVERSED=$(/usr/libexec/PlistBuddy -c "Print :REVERSED_CLIENT_ID" ios/Runner/GoogleService-Info.plist)
+          /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 $REVERSED" ios/Runner/Info.plist
+          echo "Firebase iOS config installed"
+      - name: AdMob iOS App ID from the admin dashboard
+        script: sh ios/sync_admob_app_id.sh
+      - name: Packages
+        script: |
+          flutter pub get
+          cd ios && pod install --repo-update
+      - name: Signing
+        script: xcode-project use-profiles
+      - name: Build IPA
+        script: |
+          set -e
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
+          [ -z "$LATEST" ] && LATEST=0
+          NAME=$(grep '^version:' pubspec.yaml | sed 's/version: *\([^+]*\).*/\1/')
+          flutter build ipa --release --build-name="$NAME" --build-number=$((LATEST + 1)) \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

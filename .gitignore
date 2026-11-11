@@ -1,0 +1,26 @@
+# Build output and tool caches
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+.idea/
+*.iml
+.DS_Store
+
+# iOS generated files
+ios/Pods/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/ephemeral/
+ios/.symlinks/
+**/xcuserdata/
+
+# Android signing: never commit
+android/key.properties
+**/*.keystore
+**/*.jks
+android/local.properties
+android/.gradle/

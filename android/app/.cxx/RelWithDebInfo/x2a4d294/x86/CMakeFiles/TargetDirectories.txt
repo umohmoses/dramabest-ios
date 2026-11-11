@@ -1,0 +1,2 @@
+D:/projects/main_projects/story_box/android/app/.cxx/RelWithDebInfo/x2a4d294/x86/CMakeFiles/edit_cache.dir
+D:/projects/main_projects/story_box/android/app/.cxx/RelWithDebInfo/x2a4d294/x86/CMakeFiles/rebuild_cache.dir

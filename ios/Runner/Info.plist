@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Dramabest</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Dramabest</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+
+	<!-- FIREBASE CODE START -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+		    <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>com.dramabest.story</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>REVERSED_CLIENT_ID_FROM_GOOGLESERVICE_INFO</string> <!-- set at build time from GoogleService-Info.plist -->
+			</array>
+		</dict>
+
+		<!-- DEEP LINKS CODE START -->
+        <dict>
+             <key>CFBundleTypeRole</key>
+             <string>Editor</string>
+             <key>CFBundleURLName</key>
+             <string>dramabest.app</string>
+             <key>CFBundleURLSchemes</key>
+             <array>
+               	  <string>dramabest</string>
+             </array>
+        </dict>
+        <!-- DEEP LINKS CODE END -->
+
+	</array>
+	<!-- FIREBASE CODE END -->
+
+	<!-- DEEP LINKS CODE START -->
+    <key>com.apple.developer.associated-domains</key>
+    <array>
+        <string>applinks:admin.dramabest.com</string>
+    </array>
+    <!-- DEEP LINKS CODE END -->
+
+	<key>GADApplicationIdentifier</key>
+    	<string>ca-app-pub-2264110086713649~5205563863</string>
+
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<!-- APP PERMISSION CODE START -->
+    <key>NSCameraUsageDescription</key>
+    <string>Dramabest uses the camera only if you choose to take a new profile photo.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Dramabest uses the microphone only if you choose to record a video.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Dramabest opens your photos only if you choose a profile picture.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Dramabest saves a drama clip to your photos only when you tap save or share.</string>
+    <key>UIApplicationSupportsIndirectInputEvents</key>
+    <true/>
+	<key>UIBackgroundModes</key>
+    <array>
+        <string>audio</string>
+        <string>remote-notification</string>
+    </array>
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <true/>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>SKAdNetworkItems</key>
+    <array>
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>cstr6suwn9.skadnetwork</string>
+        </dict>
+    </array>
+    <!-- APP PERMISSION CODE END -->
+</dict>
+</plist>

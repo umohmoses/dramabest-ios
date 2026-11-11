@@ -1,0 +1,127 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "com.google.gms.google-services"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
+if (flutterVersionCode == null) {
+    flutterVersionCode = "1"
+}
+
+def flutterVersionName = localProperties.getProperty("flutter.versionName")
+if (flutterVersionName == null) {
+    flutterVersionName = "1.0"
+}
+
+// Release signing: android/key.properties (never commit it) with
+//   storeFile=<path to upload keystore>  storePassword=...  keyAlias=...  keyPassword=...
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+def hasReleaseKey = keystorePropertiesFile.exists()
+if (hasReleaseKey) {
+    keystorePropertiesFile.withReader("UTF-8") { reader -> keystoreProperties.load(reader) }
+}
+
+// The AdMob App ID comes from the admin dashboard (Monetisation -> Mobile app ads), not from this file.
+// Google's SDK reads it from the installed app at startup, so each build pulls the current value.
+def isReleaseBuild = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") }
+def admobFetchProblem = "the dashboard returned no Android App ID"
+def fetchAdmobAppId = {
+    try {
+        def m = (file("../../lib/utils/api.dart").text =~ /SECRET_KEY\s*=\s*"([^"]+)"/)
+        def connection = new URL("https://admin.dramabest.com/api/client/setting/retrieveSettingsForUser").openConnection()
+        connection.setRequestProperty("key", m[0][1])
+        connection.setConnectTimeout(15000)
+        connection.setReadTimeout(30000)
+        def body = new groovy.json.JsonSlurper().parse(connection.inputStream)
+        return body?.setting?.android?.google?.appId ?: ""
+    } catch (Exception e) {
+        admobFetchProblem = "${e.class.simpleName}: ${e.message}"
+        logger.warn("Could not read the AdMob App ID from the admin dashboard: ${admobFetchProblem}")
+        return ""
+    }
+}
+def admobAppId = fetchAdmobAppId()
+if (!admobAppId) {
+    if (isReleaseBuild) {
+        throw new GradleException("No Android AdMob App ID (${admobFetchProblem}). Check the admin dashboard: Monetisation -> Mobile app ads -> Android App ID.")
+    }
+    admobAppId = "ca-app-pub-3940256099942544~3347511713" // Google's sample ID: local debug builds only
+}
+
+android {
+    namespace = "com.dramabest.story"
+    compileSdk = 36
+    ndkVersion = "28.2.13676358"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "com.dramabest.story"
+        manifestPlaceholders += [admobAppId: admobAppId]
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        minSdkVersion 24
+        targetSdkVersion 36
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
+    }
+
+    signingConfigs {
+        if (hasReleaseKey) {
+            release {
+                storeFile = file(keystoreProperties["storeFile"])
+                storePassword = keystoreProperties["storePassword"]
+                keyAlias = keystoreProperties["keyAlias"]
+                keyPassword = keystoreProperties["keyPassword"]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            // Uses the real upload key when android/key.properties exists; otherwise a
+            // debug-signed build that is for device testing only (Play will reject it).
+            signingConfig = hasReleaseKey ? signingConfigs.release : signingConfigs.debug
+            // R8 shrinks and obfuscates the code (Play's "DEX code optimization" check).
+            // The deobfuscation map (mapping.txt) is bundled in the AAB automatically.
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+    lint {
+        checkReleaseBuilds false
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+dependencies {
+//    implementation 'com.google.android.gms:play-services-ads-lite:24.0.0'
+    implementation 'com.google.android.gms:play-services-ads:24.1.0'
+    implementation 'com.google.android.gms:play-services-ads-base:24.1.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+}

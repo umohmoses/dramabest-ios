@@ -1,0 +1,13 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "Enter Your TeamID.Enter Your Package Name",
+                "paths": ["*"]
+            }
+        ]
+    }
+}
+
+

@@ -1,0 +1,125 @@
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/> <!-- Use For Network Content -->
+    <uses-permission android:name="android.permission.VIBRATE"/> <!-- Use For Like Button Tap Vibrate -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <application
+        android:label="Dramabest"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:largeHeap="true"
+        android:hardwareAccelerated="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            tools:targetApi="honeycomb">
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+                />
+
+            <!-- Main launcher intent -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- DEEP LINK CODE START -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="admin.dramabest.com" />
+            </intent-filter>
+
+<!--            <intent-filter android:autoVerify="true">-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--                <data android:scheme="https" />-->
+<!--                <data android:host="story.digicean.com" /> &lt;!&ndash;Enter Your Domain : CREDENTIAL Enter Your Domain&ndash;&gt;-->
+<!--                <data android:pathPrefix="/post" />-->
+<!--                <data android:scheme="https" />-->
+<!--                <data android:host="story.digicean.com" /> &lt;!&ndash;Enter Your Domain : CREDENTIAL Enter Your Domain&ndash;&gt;-->
+<!--                <data android:pathPrefix="/" />-->
+<!--            </intent-filter>-->
+<!--            <intent-filter>-->
+<!--                <data-->
+<!--                    android:host="open"-->
+<!--                    android:scheme="https://storybox.digicean.com/://" /> &lt;!&ndash;https://Enter Your Domain/:// Ex :- yourdomain.com &ndash;&gt; &lt;!&ndash; CREDENTIAL &ndash;&gt;-->
+
+<!--                <action android:name="android.intent.action.VIEW" />-->
+
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--            </intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Also used by the payment return page (dramabest://open/payment?ref=...) to bring the buyer back to the app. -->
+                <data android:scheme="dramabest" android:host="open" /> <!--Enter Your App Name In Small Character  Ex :- xyz --> <!-- CREDENTIAL -->
+            </intent-filter>
+
+            <!-- DEEP LINK CODE END -->
+
+
+        </activity>
+        <!-- Required by audio_service: MainActivity extends AudioServiceFragmentActivity and the
+             episode player calls AudioService.init(). Without these, init fails/hangs. -->
+        <service
+            android:name="com.ryanheise.audioservice.AudioService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+        <!-- Google Ads Configuration -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}"/>
+        <!-- Pushes that arrive while the app is closed use the high-importance channel, so they pop up -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="dramabest_alerts" />
+
+    </application>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>

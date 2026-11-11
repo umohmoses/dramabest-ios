@@ -1,0 +1,78 @@
+{
+  "project_info": {
+    "project_number": "661359230162",
+    "project_id": "dramabest-25b22",
+    "storage_bucket": "dramabest-25b22.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:661359230162:android:3ba2454a764c4be43f010b",
+        "android_client_info": {
+          "package_name": "com.dramabest.story"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "661359230162-avb3i21ajcbft9d9gaddmtqhurasekus.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dramabest.story",
+            "certificate_hash": "3c1a1daebe41c20622eb6de28f0a4f1fa3aa8159"
+          }
+        },
+        {
+          "client_id": "661359230162-iqhp4lk4jppqqmqv9t1eam9rl5bodqin.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dramabest.story",
+            "certificate_hash": "78fcec25733844e8210d3eece79ed116a78ee347"
+          }
+        },
+        {
+          "client_id": "661359230162-m2p4ccpcbegphd0bpc3q4mdageqssae4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dramabest.story",
+            "certificate_hash": "a225fb278210878d579c0f197037756fd1d05d9e"
+          }
+        },
+        {
+          "client_id": "661359230162-vtg58mubhui1jog4fvnm5o50dh3od5g4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dramabest.story",
+            "certificate_hash": "ae01962ad8748f3bcbd79eeb4f7459e4522233e2"
+          }
+        },
+        {
+          "client_id": "661359230162-58elfpoj4utl31l6sjgsisquku6cpka3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjM-Bv-zOlbSCM3-FLG407G7HYBzeaSLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "661359230162-58elfpoj4utl31l6sjgsisquku6cpka3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "661359230162-2hb9v7igcqtfbpakt9culp91fd067s8b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dramabest.story"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

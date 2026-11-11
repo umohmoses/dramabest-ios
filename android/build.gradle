@@ -1,0 +1,39 @@
+buildscript {
+    ext.kotlin_version = '2.3.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.9.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.4.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    // flutter_branch_sdk asks for "5.21.+", which makes every build look up the newest version online.
+    // Pin the version the app has shipped with so builds are repeatable and work without that lookup.
+    configurations.configureEach {
+        resolutionStrategy.force "io.branch.sdk.android:library:5.21.3"
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    if (project.projectDir.toPath().getRoot() == rootProject.projectDir.toPath().getRoot()) {
+        project.buildDir = "${rootProject.buildDir}/${project.name}"
+    }
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
