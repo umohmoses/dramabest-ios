@@ -163,7 +163,30 @@ class _EpisodeWisePreviewReelsViewState extends State<EpisodeWisePreviewReelsVie
   // Add this flag variable in your class
   int retryCount = 0;
   final int maxRetryCount = 2;
+
+  bool _initializing = false;
+  int _reinitAttempts = 0;
+
+  /// The player is set up once, when the page is built. A locked episode's URL is
+  /// refused by the server (403 LOCKED) until it is unlocked, so that first setup
+  /// fails and the page stays on the loading bar. Nothing set it up again after an
+  /// ad/coin unlock, so the unlocked episode kept loading forever. This sets the
+  /// player up again once the episode is unlocked (a no-op when it already works).
+  Future<void> _ensurePlayerAfterUnlock() async {
+    if (!mounted || _initializing) return;
+    if (widget.index >= controller.mainReels.length) return;
+    if (controller.mainReels[widget.index].isLocked == true) return;
+    if (videoPlayerController?.value.isInitialized ?? false) return;
+    if (_reinitAttempts >= 3) return; // a genuinely broken URL must not loop
+    _reinitAttempts++;
+    log("🔁 Episode ${widget.index} unlocked: setting the player up again (attempt $_reinitAttempts)");
+    onDisposeVideoPlayer(); // drop the controller that failed while locked
+    await initializeVideoPlayer();
+    _autoPlayIfReady();
+  }
+
   Future<void> initializeVideoPlayer() async {
+    _initializing = true;
     try {
       _completionHandled = false;
       _awaitingAutoAdvance = false;
@@ -254,6 +277,15 @@ class _EpisodeWisePreviewReelsViewState extends State<EpisodeWisePreviewReelsVie
     } catch (e) {
       onDisposeVideoPlayer();
       log("Reels Video Initialization Failed !!! $e");
+    } finally {
+      _initializing = false;
+    }
+    if (videoPlayerController?.value.isInitialized ?? false) {
+      _reinitAttempts = 0;
+    } else if (mounted && widget.index < controller.mainReels.length && controller.mainReels[widget.index].isLocked == false) {
+      // Failed, but the episode is (now) unlocked, e.g. the unlock finished while
+      // this setup was still running against the locked URL: try again shortly.
+      Future.delayed(const Duration(milliseconds: 800), _ensurePlayerAfterUnlock);
     }
   }
 
@@ -713,12 +745,14 @@ class _EpisodeWisePreviewReelsViewState extends State<EpisodeWisePreviewReelsVie
     if (MonetisationConfig.vipUnlocks) {
       controller.mainReels[widget.index].isLocked = false;
       onPlayVideo();
+      _ensurePlayerAfterUnlock();
       return;
     }
     // Auto-unlock path — no sheet needed
     if (controller.isAutoUnlock && (controller.mainReels[widget.index].coin ?? 0) <= Preference.userCoin.value) {
       await controller.silentUnlock(widget.index);
       onPlayVideo();
+      _ensurePlayerAfterUnlock();
       return;
     }
 
@@ -770,6 +804,8 @@ class _EpisodeWisePreviewReelsViewState extends State<EpisodeWisePreviewReelsVie
 
     if (controller.mainReels[widget.index].isLocked == false) {
       onPlayVideo();
+      // The player failed to load while the episode was locked: set it up now.
+      await _ensurePlayerAfterUnlock();
     }
   }
 
@@ -786,6 +822,9 @@ class _EpisodeWisePreviewReelsViewState extends State<EpisodeWisePreviewReelsVie
       if (!mounted) return;
 
       if (isCurrentPage) {
+        // Covers unlocks that don't go through handleLockedVideo (e.g. the sheet opened by
+        // the controller on scroll, or the bottom sheet's episode list). No-op if it works.
+        _ensurePlayerAfterUnlock();
         if (!isVideoLoading.value && isReelsPage.value && !_awaitingAutoAdvance && !_userPaused) {
           onPlayVideo();
           updateNotificationState();
@@ -798,6 +837,7 @@ class _EpisodeWisePreviewReelsViewState extends State<EpisodeWisePreviewReelsVie
           if (video.isLocked == true) {
             video.isLocked = false;
             _autoPlayIfReady(); // the play above was skipped while it was still locked
+            _ensurePlayerAfterUnlock();
           }
           return;
         }
@@ -805,6 +845,7 @@ class _EpisodeWisePreviewReelsViewState extends State<EpisodeWisePreviewReelsVie
         if (controller.isAutoUnlock && (controller.mainReels[widget.index].coin ?? 0) <= Preference.userCoin.value) {
           await controller.silentUnlock(widget.index);
           _autoPlayIfReady();
+          _ensurePlayerAfterUnlock();
           return;
         }
 
